@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Person from "./Person/Person"
+import { forInStatement } from '@babel/types';
 
 class App extends Component {
   state = {
@@ -13,15 +14,14 @@ class App extends Component {
     showPersons: false
   }
 
-  switchNameHandler = (newName) => {
-    // console.log("Was clicked")
-    // DON'T DO THIS: this.state.person[0].name = "Sam I am"
-    this.setState ({
-      persons: [
-        {name: newName, age: 222222},
-        { name: "Manu", age: 29},
-        { name: "Stephanie", age: 27}
-      ]
+  deletePersonHandler = (personIndex) => {
+    // bad practice to manipulate the orignal so use slice/ or spread operaor (...)to get a copy first
+    // const persons= this.state.persons;
+    // const persons = this.state.person.slice();
+    const persons = [...this.state.persons];
+    persons.splice(personIndex,1);
+    this.setState({
+      persons:persons
     })
   }
 
@@ -55,17 +55,12 @@ class App extends Component {
     if (this.state.showPersons) {
       persons = (
         <div>
-          <Person 
-            name={this.state.persons[0].name} 
-            age={this.state.persons[0].age} />
-          <Person 
-            name={this.state.persons[1].name} 
-            age={this.state.persons[1].age} 
-            click={this.switchNameHandler.bind(this, "Max!")}
-            changed={this.nameChangedHandler}> My Hobbies: Racing</Person>
-          <Person 
-            name={this.state.persons[2].name} 
-            age={this.state.persons[2].age} />
+          {this.state.persons.map((person, index) => {
+            return <Person 
+                    click={() => this.deletePersonHandler(index)}
+                    name={person.name}
+                    age={person.age} />
+          })}
         </div>
       );
 
